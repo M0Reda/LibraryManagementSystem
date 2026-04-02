@@ -1,0 +1,14 @@
+**/.git
+**/.gitignore
+**/.dockerignore
+**/bin
+**/obj
+**/node_modules
+**/.vs
+**/.vscode
+**/dist
+**/*.db
+**/data
+**/README.md
+**/.DS_Store
+**/Thumbs.db
