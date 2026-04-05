@@ -45,6 +45,7 @@ Before running the project, ensure you have:
 Once the application is running, you can access the various services at:
 - **API Swagger (Docker):** `http://localhost:8081` (dedicated `swaggerapi/swagger-ui` container)
 - **API Swagger (Local):** `http://localhost:5000/swagger` (embedded Swashbuckle UI, only when running without Docker)
+- **Reset Admin Tool:** `POST /api/ResetAdmin/reset-admin` (Use this if you cannot login with default credentials)
 - **pgAdmin (Database UI):** `http://localhost:5050` (Login: `admin@library.com` / `admin`)
 - **MailHog (Email UI):** `http://localhost:8025` (For testing Hangfire email reminders, if implemented)
 
@@ -72,18 +73,22 @@ While this project uses JWT in the Authorization header for simplicity, industry
 
 ## Testing Workflow (Swagger)
 
-1. Open `http://localhost:8081`
-2. **Login as Admin**:
-   - POST `/api/auth/login` with `{"email": "admin@library.com", "password": "Admin@123"}`
+1. Open `http://localhost:8081` (Docker) or `http://localhost:5000/swagger` (Local).
+2. **Reset/Set Admin Credentials (Optional)**:
+   - If you have trouble logging in, use `POST /api/ResetAdmin/reset-admin`.
+   - Provide the `email` and `password` you want to use in the JSON body.
+3. **Login as Admin**:
+   - POST `/api/auth/login` with your credentials.
    - Copy the generated `token`.
-3. **Authorize**:
-   - Click the "Authorize" button in Swagger.
-   - Enter `Bearer {your_token}` and click Authorize.
-4. **Test Endpoints**:
+4. **Authorize (CRITICAL)**:
+   - Click the **Authorize** button in Swagger.
+   - Enter **`Bearer {your_token}`** (Type the word "Bearer" followed by a space, then paste your token).
+   - Click Authorize.
+5. **Test Endpoints**:
    - GET `/api/books` should return the seeded books.
    - POST `/api/authors` (Admin only) to create a new author.
-5. **Login as Member**:
-   - POST `/api/auth/login` with `{"email": "john@member.com", "password": "Admin@123"}`
+6. **Login as Member**:
+   - POST `/api/auth/login` with member credentials (e.g., `john@member.com`).
    - Repeat the Authorization step with the new token.
 6. **Borrow a Book**:
    - POST `/api/borrowings` with valid `bookId` and `memberId`.
@@ -102,7 +107,8 @@ LibraryManagementSystem/
 │   ├── AuthorsController.cs      # Author CRUD operations
 │   ├── BooksController.cs        # Book CRUD operations
 │   ├── BorrowingsController.cs   # Borrowing management
-│   └── MembersController.cs      # Member CRUD operations
+│   ├── MembersController.cs      # Member CRUD operations
+│   └── ResetAdminController.cs   # [NEW] Admin credentials recovery tool
 ├── Services/            # Business logic layer
 │   ├── Interfaces/      # Service contracts
 │   └── Implementations/ # Service implementations

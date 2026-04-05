@@ -133,9 +133,9 @@ namespace LibraryManagementSystem.Migrations
                 columns: new[] { "Id", "Email", "FullName", "PasswordHash", "Role" },
                 values: new object[,]
                 {
-                    { 1, "admin@library.com", "Admin User", "$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgJRv/dY7E6dFvG2J9uYdREzP4fS", "Admin" },
-                    { 2, "john@member.com", "John Doe", "$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgJRv/dY7E6dFvG2J9uYdREzP4fS", "Member" },
-                    { 3, "jane@member.com", "Jane Doe", "$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgJRv/dY7E6dFvG2J9uYdREzP4fS", "Member" }
+                    { 1, "admin@library.com", "Admin User", "$2b$12$FeQYBH2yasvsubBD4ylbneb8jJsGRUm3RAK9P0wVMNMYd0yZG9hLW", "Admin" },
+                    { 2, "john@member.com", "John Doe", "$2b$12$FeQYBH2yasvsubBD4ylbneb8jJsGRUm3RAK9P0wVMNMYd0yZG9hLW", "Member" },
+                    { 3, "jane@member.com", "Jane Doe", "$2b$12$FeQYBH2yasvsubBD4ylbneb8jJsGRUm3RAK9P0wVMNMYd0yZG9hLW", "Member" }
                 });
 
             migrationBuilder.InsertData(

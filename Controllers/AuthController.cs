@@ -49,7 +49,7 @@ namespace LibraryManagementSystem.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var member = await _context.Members.FirstOrDefaultAsync(m => m.Email == dto.Email);
+            var member = await _context.Members.FirstOrDefaultAsync(m => m.Email.ToLower() == dto.Email.ToLower());
 
             if (member == null || !BCrypt.Net.BCrypt.Verify(dto.Password, member.PasswordHash))
                 return Unauthorized("Invalid email or password");
@@ -67,7 +67,8 @@ namespace LibraryManagementSystem.Controllers
                 new Claim(ClaimTypes.Role, member.Role)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+            var jwtKey = _config["Jwt:Key"] ?? "default_secret_key_32_chars_long!!";
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_config["Jwt:ExpirationMinutes"]));
 

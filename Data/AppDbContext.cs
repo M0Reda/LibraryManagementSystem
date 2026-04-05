@@ -49,7 +49,7 @@ namespace LibraryManagementSystem.Data
                 .HasIndex(p => p.MemberId)
                 .IsUnique();
 
-            string adminPassHash = "$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgJRv/dY7E6dFvG2J9uYdREzP4fS";
+            string adminPassHash = "$2a$12$V79D8Gf3S0tY7y8V8Y8Y8uY8Y8Y8Y8Y8Y8Y8Y8Y8Y8Y8Y8Y8Y8Y8Y";
 
             modelBuilder.Entity<Author>().HasData(
                 new Author { Id = 1, Name = "J.K. Rowling", Email = "rowling@author.com", Bio = "Author of Harry Potter" },

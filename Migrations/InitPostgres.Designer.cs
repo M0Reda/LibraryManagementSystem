@@ -216,7 +216,7 @@ namespace LibraryManagementSystem.Migrations
                             Id = 1,
                             Email = "admin@library.com",
                             FullName = "Admin User",
-                            PasswordHash = "$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgJRv/dY7E6dFvG2J9uYdREzP4fS",
+                            PasswordHash = "$2b$12$FeQYBH2yasvsubBD4ylbneb8jJsGRUm3RAK9P0wVMNMYd0yZG9hLW",
                             Role = "Admin"
                         },
                         new
@@ -224,7 +224,7 @@ namespace LibraryManagementSystem.Migrations
                             Id = 2,
                             Email = "john@member.com",
                             FullName = "John Doe",
-                            PasswordHash = "$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgJRv/dY7E6dFvG2J9uYdREzP4fS",
+                            PasswordHash = "$2b$12$FeQYBH2yasvsubBD4ylbneb8jJsGRUm3RAK9P0wVMNMYd0yZG9hLW",
                             Role = "Member"
                         },
                         new
@@ -232,7 +232,7 @@ namespace LibraryManagementSystem.Migrations
                             Id = 3,
                             Email = "jane@member.com",
                             FullName = "Jane Doe",
-                            PasswordHash = "$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgJRv/dY7E6dFvG2J9uYdREzP4fS",
+                            PasswordHash = "$2b$12$FeQYBH2yasvsubBD4ylbneb8jJsGRUm3RAK9P0wVMNMYd0yZG9hLW",
                             Role = "Member"
                         });
                 });
