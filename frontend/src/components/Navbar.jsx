@@ -4,11 +4,15 @@ import './Navbar.css'
 export default function Navbar() {
   const navigate = useNavigate()
   const email = localStorage.getItem('userEmail') || ''
+  const fullName = localStorage.getItem('userFullName') || ''
   const role  = localStorage.getItem('userRole')  || ''
+  
+  const displayName = fullName || email.split('@')[0]
 
   const handleLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('userEmail')
+    localStorage.removeItem('userFullName')
     localStorage.removeItem('userRole')
     navigate('/login')
   }
@@ -16,12 +20,10 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-inner">
-        {/* Logo */}
         <Link to="/" className="navbar-brand">
           📚 <span>LibraryMS</span>
         </Link>
 
-        {/* Nav Links */}
         <ul className="navbar-links">
           <li>
             <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
@@ -52,11 +54,10 @@ export default function Navbar() {
           </li>
         </ul>
 
-        {/* Right side */}
         <div className="navbar-right">
-          {email && (
-            <span className="navbar-user" title={email}>
-              👤 {email.split('@')[0]}
+          {displayName && (
+            <span className="navbar-user" title={displayName}>
+              👤 {displayName}
             </span>
           )}
           <button onClick={handleLogout} className="btn-logout">

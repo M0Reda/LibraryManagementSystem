@@ -47,7 +47,6 @@ Once the application is running, you can access the various services at:
 - **API Swagger (Local):** `http://localhost:5000/swagger` (embedded Swashbuckle UI, only when running without Docker)
 - **Reset Admin Tool:** `POST /api/ResetAdmin/reset-admin` (Use this if you cannot login with default credentials)
 - **pgAdmin (Database UI):** `http://localhost:5050` (Login: `admin@library.com` / `admin`)
-- **MailHog (Email UI):** `http://localhost:8025` (For testing Hangfire email reminders, if implemented)
 
 ## Technologies Used
 
@@ -60,7 +59,6 @@ Once the application is running, you can access the various services at:
 - **Docker**: Packages the API into a portable, reproducible container image.
 - **swaggerapi/swagger-ui**: Official standalone Swagger UI Docker image — serves the interactive API docs by reading the OpenAPI spec JSON from the API container.
 - **pgAdmin4**: Web-based administration tool for managing the PostgreSQL database.
-- **MailHog**: Web and API based SMTP testing tool, used to intercept and view emails sent by the application (useful for testing background email jobs).
 
 ## Why HTTP-only Cookies for Auth Security?
 
@@ -293,7 +291,7 @@ Edit `appsettings.json` to configure:
    - Check endpoint permission requirements in controller
 
 5. **Docker compose fails to start**
-   - Ensure ports 8080, 8081, 5050, 8025, 5432 are not in use
+   - Ensure ports 8080, 8081, 5050, 5432 are not in use
    - Clear Docker cache: `docker-compose down -v`
    - Rebuild: `docker-compose up --build`
 

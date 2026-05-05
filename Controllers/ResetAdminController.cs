@@ -39,7 +39,7 @@ namespace LibraryManagementSystem.Controllers
             }
 
             admin.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-            admin.Email = dto.Email; // Update email if it changed in casing or entirely
+            admin.Email = dto.Email;
             
             await _context.SaveChangesAsync();
 

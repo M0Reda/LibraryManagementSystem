@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { getBooks, getAuthors, createBook, updateBook, deleteBook } from '../services/api'
+import { getBooks, getAuthors, createBook, updateBook, deleteBook, createBorrowing } from '../services/api'
 import './BooksPage.css'
 
 const EMPTY_FORM = { title: '', isbn: '', publishedYear: '', authorId: '' }
@@ -15,16 +15,19 @@ export default function BooksPage() {
   const [error, setError]     = useState('')
   const [search, setSearch]   = useState('')
 
-  // Modal state
   const [showModal, setShowModal]   = useState(false)
-  const [editBook, setEditBook]     = useState(null) // null = add mode
+  const [editBook, setEditBook]     = useState(null)
   const [form, setForm]             = useState(EMPTY_FORM)
   const [formError, setFormError]   = useState('')
   const [saving, setSaving]         = useState(false)
 
-  // Confirm delete
   const [confirmId, setConfirmId] = useState(null)
   const [deleting, setDeleting]   = useState(false)
+
+  const [borrowBook, setBorrowBook]         = useState(null)
+  const [borrowDueDate, setBorrowDueDate]   = useState('')
+  const [borrowError, setBorrowError]       = useState('')
+  const [borrowing, setBorrowing]           = useState(false)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -55,7 +58,7 @@ export default function BooksPage() {
       title: book.title,
       isbn: book.isbn,
       publishedYear: String(book.publishedYear),
-      authorId: '',  // we don't have authorId in response, user must re-select
+      authorId: '',
     })
     setFormError('')
     setShowModal(true)
@@ -107,6 +110,26 @@ export default function BooksPage() {
     }
   }
 
+  const handleBorrow = async (e) => {
+    e.preventDefault()
+    setBorrowing(true)
+    setBorrowError('')
+    try {
+      await createBorrowing({
+        bookId: borrowBook.id,
+        dueDate: borrowDueDate,
+      })
+      setBorrowBook(null)
+      setBorrowDueDate('')
+      alert('Book borrowed successfully! Check your borrowings page.')
+    } catch (err) {
+      const msg = err.response?.data?.message || err.response?.data || 'Failed to borrow book.'
+      setBorrowError(typeof msg === 'string' ? msg : JSON.stringify(msg))
+    } finally {
+      setBorrowing(false)
+    }
+  }
+
   const filtered = books.filter(
     (b) =>
       b.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -116,7 +139,6 @@ export default function BooksPage() {
 
   return (
     <div className="page-wrapper">
-      {/* Header */}
       <div className="page-header">
         <h1 className="page-title">📖 Books</h1>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -124,7 +146,6 @@ export default function BooksPage() {
         </div>
       </div>
 
-      {/* Search */}
       <div className="search-bar">
         <div className="search-input-wrapper">
           <span className="search-icon">🔍</span>
@@ -139,7 +160,6 @@ export default function BooksPage() {
         </div>
       </div>
 
-      {/* States */}
       {loading && (
         <div className="spinner-container">
           <div className="spinner" />
@@ -158,7 +178,6 @@ export default function BooksPage() {
         </div>
       )}
 
-      {/* Grid */}
       {!loading && !error && filtered.length > 0 && (
         <div className="books-grid">
           {filtered.map((book) => (
@@ -196,20 +215,30 @@ export default function BooksPage() {
                     </button>
                   </div>
                 )}
+
+                {!isAdmin && (
+                  <div className="book-card-actions">
+                    <button
+                      id={`borrow-book-${book.id}`}
+                      className="btn btn-primary btn-sm"
+                      onClick={() => setBorrowBook(book)}
+                    >
+                      📚 Borrow
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* FAB — Add Book (Admin) */}
       {isAdmin && (
         <button id="add-book-fab" className="fab" onClick={openAdd} title="Add Book">
           +
         </button>
       )}
 
-      {/* Add / Edit Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && closeModal()}>
           <div className="modal">
@@ -262,7 +291,6 @@ export default function BooksPage() {
         </div>
       )}
 
-      {/* Delete Confirm Modal */}
       {confirmId && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setConfirmId(null)}>
           <div className="modal">
@@ -281,6 +309,46 @@ export default function BooksPage() {
                 {deleting ? 'Deleting…' : 'Yes, Delete'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {borrowBook && (
+        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setBorrowBook(null)}>
+          <div className="modal">
+            <div className="modal-header">
+              <span className="modal-title">📚 Borrow Book</span>
+              <button className="modal-close" onClick={() => setBorrowBook(null)}>×</button>
+            </div>
+            <form onSubmit={handleBorrow}>
+              <div className="modal-body">
+                {borrowError && <div className="alert alert-error">⚠️ {borrowError}</div>}
+                
+                <div style={{ marginBottom: 20 }}>
+                  <p style={{ fontWeight: 600, fontSize: '1rem' }}>{borrowBook.title}</p>
+                  <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>by {borrowBook.authorName || '—'}</p>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="borrow-due-date" className="form-label">Due Date</label>
+                  <input 
+                    id="borrow-due-date" 
+                    type="date" 
+                    className="form-control" 
+                    value={borrowDueDate}
+                    onChange={(e) => setBorrowDueDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    required 
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-ghost" onClick={() => setBorrowBook(null)}>Cancel</button>
+                <button id="confirm-borrow-btn" type="submit" className="btn btn-primary" disabled={borrowing}>
+                  {borrowing ? 'Borrowing…' : 'Confirm Borrow'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

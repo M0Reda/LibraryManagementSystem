@@ -101,7 +101,6 @@ export default function MembersPage() {
         </span>
       </div>
 
-      {/* Search */}
       <div className="search-bar">
         <div className="search-input-wrapper">
           <span className="search-icon">🔍</span>
@@ -177,7 +176,6 @@ export default function MembersPage() {
         </div>
       )}
 
-      {/* Edit Modal */}
       {editMember && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && closeEdit()}>
           <div className="modal">
@@ -215,7 +213,6 @@ export default function MembersPage() {
         </div>
       )}
 
-      {/* Delete Confirm */}
       {confirmId && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setConfirmId(null)}>
           <div className="modal">

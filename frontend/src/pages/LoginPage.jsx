@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { login, register } from '../services/api'
 import './LoginPage.css'
 
-// Decode JWT payload (no library needed)
 function parseJwt(token) {
   try {
     const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
@@ -15,7 +14,7 @@ function parseJwt(token) {
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const [mode, setMode] = useState('login') // 'login' | 'register'
+  const [mode, setMode] = useState('login')
   const [form, setForm] = useState({ fullName: '', email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -40,11 +39,16 @@ export default function LoginPage() {
       const { token } = res.data
       const payload = parseJwt(token)
 
-      // Extract standard claim names used by .NET
       const email =
         payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ||
         payload.email ||
         form.email
+      const fullName =
+        payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ||
+        payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] ||
+        payload.name ||
+        form.fullName ||
+        'User'
       const role =
         payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
         payload.role ||
@@ -52,6 +56,7 @@ export default function LoginPage() {
 
       localStorage.setItem('token', token)
       localStorage.setItem('userEmail', email)
+      localStorage.setItem('userFullName', fullName)
       localStorage.setItem('userRole', role)
 
       navigate('/books')
@@ -69,11 +74,9 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      {/* Background pattern */}
       <div className="login-bg-pattern" aria-hidden="true" />
 
       <div className="login-card">
-        {/* Header */}
         <div className="login-card-header">
           <div className="login-logo">📚</div>
           <h1 className="login-title">LibraryMS</h1>
@@ -82,7 +85,6 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Tabs */}
         <div className="login-tabs">
           <button
             className={`login-tab ${mode === 'login' ? 'active' : ''}`}
@@ -100,7 +102,6 @@ export default function LoginPage() {
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="login-form">
           {error && (
             <div className="alert alert-error" role="alert">

@@ -102,7 +102,6 @@ export default function AuthorsPage() {
         )}
       </div>
 
-      {/* Search */}
       <div className="search-bar">
         <div className="search-input-wrapper">
           <span className="search-icon">🔍</span>
@@ -176,7 +175,6 @@ export default function AuthorsPage() {
         </div>
       )}
 
-      {/* Add/Edit Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && closeModal()}>
           <div className="modal">
@@ -215,7 +213,6 @@ export default function AuthorsPage() {
         </div>
       )}
 
-      {/* Delete Confirm */}
       {confirmId && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setConfirmId(null)}>
           <div className="modal">

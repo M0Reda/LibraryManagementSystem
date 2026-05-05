@@ -57,7 +57,6 @@
   font-weight: 400;
 }
 
-/* Tabs */
 .login-tabs {
   display: flex;
   border-bottom: 1px solid var(--color-border);
@@ -90,7 +89,6 @@
   font-weight: 600;
 }
 
-/* Form */
 .login-form {
   padding: 28px 32px 32px;
 }

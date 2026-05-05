@@ -13,13 +13,11 @@ export default function BookDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState('')
 
-  // Edit form
   const [editing, setEditing]     = useState(false)
   const [form, setForm]           = useState({})
   const [formError, setFormError] = useState('')
   const [saving, setSaving]       = useState(false)
 
-  // Delete confirm
   const [confirmDel, setConfirmDel] = useState(false)
   const [deleting, setDeleting]     = useState(false)
 
@@ -92,7 +90,6 @@ export default function BookDetailPage() {
 
   return (
     <div className="page-wrapper" style={{ maxWidth: 720 }}>
-      {/* Breadcrumb */}
       <nav style={{ marginBottom: 20, fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
         <Link to="/books" style={{ color: 'var(--color-accent)' }}>Books</Link>
         {' / '}
@@ -172,7 +169,6 @@ export default function BookDetailPage() {
         </div>
       </div>
 
-      {/* Delete confirm */}
       {confirmDel && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setConfirmDel(false)}>
           <div className="modal">

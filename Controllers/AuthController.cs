@@ -64,6 +64,7 @@ namespace LibraryManagementSystem.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier, member.Id.ToString()),
                 new Claim(ClaimTypes.Email, member.Email),
+                new Claim(ClaimTypes.Name, member.FullName),
                 new Claim(ClaimTypes.Role, member.Role)
             };
 

@@ -22,10 +22,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public */}
         <Route path="/login" element={<LoginPage />} />
-
-        {/* Protected — with Navbar */}
         <Route
           path="/"
           element={
@@ -74,8 +71,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

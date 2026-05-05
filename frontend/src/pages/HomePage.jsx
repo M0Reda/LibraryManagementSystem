@@ -1,9 +1,6 @@
 import { Link } from 'react-router-dom'
 import './HomePage.css'
 
-const role = localStorage.getItem('userRole') || 'Member'
-const email = localStorage.getItem('userEmail') || ''
-
 const navCards = [
   {
     icon: '📖',
@@ -44,7 +41,6 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
-      {/* Hero Banner */}
       <section className="home-hero">
         <div className="home-hero-inner">
           <div className="home-hero-badge">Welcome back, {userName} 👋</div>
@@ -67,7 +63,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Decorative book stack */}
         <div className="home-hero-art" aria-hidden="true">
           <div className="book-stack">
             <div className="book b1">Philosophy</div>
@@ -78,7 +73,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Quick-access cards */}
       <section className="home-cards-section">
         <h2 className="section-title">Quick Access</h2>
         <div className="home-nav-grid">
@@ -97,7 +91,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer strip */}
       <footer className="home-footer">
         <p>📚 LibraryMS &mdash; Built with React &amp; ASP.NET Core</p>
       </footer>
