@@ -36,7 +36,7 @@ namespace LibraryManagementSystem.Controllers
                 Email = dto.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                 Role = "Member",
-                Profile = new MemberProfile { Address = "", Phone = "", Bio = "" }
+                Profile = new MemberProfile { Address = "", Phone = dto.Phone ?? "", Bio = "" }
             };
 
             _context.Members.Add(member);

@@ -15,7 +15,7 @@ function parseJwt(token) {
 export default function LoginPage() {
   const navigate = useNavigate()
   const [mode, setMode] = useState('login')
-  const [form, setForm] = useState({ fullName: '', email: '', password: '' })
+  const [form, setForm] = useState({ fullName: '', email: '', password: '', phone: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -33,7 +33,7 @@ export default function LoginPage() {
       if (mode === 'login') {
         res = await login({ email: form.email, password: form.password })
       } else {
-        res = await register({ fullName: form.fullName, email: form.email, password: form.password })
+        res = await register({ fullName: form.fullName, email: form.email, password: form.password, phone: form.phone })
       }
 
       const { token } = res.data
@@ -79,7 +79,7 @@ export default function LoginPage() {
       <div className="login-card">
         <div className="login-card-header">
           <div className="login-logo">📚</div>
-          <h1 className="login-title">LibraryMS</h1>
+          <h1 className="login-title">Reda's Library</h1>
           <p className="login-subtitle">
             {mode === 'login' ? 'Sign in to your account' : 'Create a new account'}
           </p>
@@ -110,20 +110,35 @@ export default function LoginPage() {
           )}
 
           {mode === 'register' && (
-            <div className="form-group">
-              <label htmlFor="fullName" className="form-label">Full Name</label>
-              <input
-                id="fullName"
-                name="fullName"
-                type="text"
-                className="form-control"
-                placeholder="John Doe"
-                value={form.fullName}
-                onChange={handleChange}
-                required
-                autoComplete="name"
-              />
-            </div>
+            <>
+              <div className="form-group">
+                <label htmlFor="fullName" className="form-label">Full Name</label>
+                <input
+                  id="fullName"
+                  name="fullName"
+                  type="text"
+                  className="form-control"
+                  placeholder="John Doe"
+                  value={form.fullName}
+                  onChange={handleChange}
+                  required
+                  autoComplete="name"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="phone" className="form-label">Phone Number</label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  className="form-control"
+                  placeholder="+1 (555) 123-4567"
+                  value={form.phone}
+                  onChange={handleChange}
+                  autoComplete="tel"
+                />
+              </div>
+            </>
           )}
 
           <div className="form-group">

@@ -92,7 +92,7 @@ export default function HomePage() {
       </section>
 
       <footer className="home-footer">
-        <p>📚 LibraryMS &mdash; Built with React &amp; ASP.NET Core</p>
+        <p>📚 Reda's Library &mdash; Built with React &amp; ASP.NET Core</p>
       </footer>
     </div>
   )

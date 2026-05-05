@@ -15,6 +15,10 @@ namespace LibraryManagementSystem.DTOs.Member
         [Required]
         [MinLength(6)]
         public string Password { get; set; } = string.Empty;
+
+        [Phone]
+        [MaxLength(20)]
+        public string? Phone { get; set; }
     }
 
     public class LoginDto

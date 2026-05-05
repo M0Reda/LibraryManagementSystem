@@ -21,7 +21,7 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-inner">
         <Link to="/" className="navbar-brand">
-          📚 <span>LibraryMS</span>
+          📚 <span>Reda's Library</span>
         </Link>
 
         <ul className="navbar-links">

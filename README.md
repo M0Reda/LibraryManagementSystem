@@ -1,4 +1,4 @@
-# Library Management System
+# Reda's Library - Library Management System
 
 A complete ASP.NET Core 8 Web API for managing authors, books, members, and borrowings.
 
@@ -6,7 +6,7 @@ A complete ASP.NET Core 8 Web API for managing authors, books, members, and borr
 
 This project is a comprehensive library management system that handles:
 - **Book Inventory Management**: Create and manage books and their authors
-- **Member Management**: Register and manage library members with profiles
+- **Member Management**: Register and manage library members with profiles (including phone numbers)
 - **Borrowing System**: Track book borrowings and returns with due date management
 - **User Authentication**: Secure login system with role-based access control (Admin/Member)
 - **Email Notifications**: Background jobs for sending reminders and notifications
@@ -162,7 +162,7 @@ LibraryManagementSystem/
    - `MemberId` (GUID): Foreign key to Member
    - `FirstName` (string): Member first name
    - `LastName` (string): Member last name
-   - `PhoneNumber` (string): Contact number
+   - `Phone` (string): Contact number (captured during registration)
    - `Address` (string): Member address
    - Relationships: One-to-One with Member
 
@@ -200,7 +200,7 @@ LibraryManagementSystem/
 ### Members
 - `GET /api/members` - Get all members (Admin only)
 - `GET /api/members/{id}` - Get member by ID
-- `POST /api/members` - Register new member
+- `POST /api/members` - Register new member (with optional phone number)
 - `PUT /api/members/{id}` - Update member profile
 - `DELETE /api/members/{id}` - Delete member (Admin only)
 
@@ -313,7 +313,7 @@ The frontend is a **React + Vite** application that provides a user-friendly int
   - **Authors Page**: View all library authors
   - **Members Page**: Manage member profiles (Admin only)
   - **Borrowings Page**: Track active borrowings and returns
-  - **Login Page**: User authentication interface
+  - **Login Page**: User authentication and registration interface with phone number capture
 
 ### Running the Frontend Locally
 
@@ -500,6 +500,30 @@ healthcheck:
 ---
 
 ## API Response Examples
+
+### Successful Registration Response
+
+**Request:**
+```bash
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "John Doe",
+  "email": "john.doe@example.com",
+  "password": "SecurePass123",
+  "phone": "+1 (555) 123-4567"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expiresIn": 3600,
+  "message": "Registration successful"
+}
+```
 
 ### Successful Login Response
 
