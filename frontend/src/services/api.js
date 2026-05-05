@@ -49,6 +49,7 @@ export const deleteAuthor = (id) => api.delete(`/authors/${id}`)
 export const getMembers = () => api.get('/members')
 export const getMember = (id) => api.get(`/members/${id}`)
 export const updateMember = (id, data) => api.put(`/members/${id}`, data)
+export const changeMemberRole = (id, data) => api.put(`/members/${id}/role`, data)
 export const deleteMember = (id) => api.delete(`/members/${id}`)
 
 export const getBorrowings = () => api.get('/borrowings')

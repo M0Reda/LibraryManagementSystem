@@ -148,9 +148,11 @@ export default function BorrowingsPage() {
             </p>
           )}
         </div>
-        <button id="add-borrowing-btn" className="btn btn-primary" onClick={() => setShowForm(true)}>
-          + New Borrowing
-        </button>
+        {!isAdmin && (
+          <button id="add-borrowing-btn" className="btn btn-primary" onClick={() => setShowForm(true)}>
+            + New Borrowing
+          </button>
+        )}
       </div>
 
       <div className="info-grid" style={{ marginBottom: 20 }}>
