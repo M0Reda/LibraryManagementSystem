@@ -297,6 +297,555 @@ Edit `appsettings.json` to configure:
 
 ---
 
+## Frontend Setup
+
+The frontend is a **React + Vite** application that provides a user-friendly interface for the Library Management System.
+
+### Frontend Features
+
+- **Responsive UI**: Works on desktop, tablet, and mobile devices
+- **User Authentication**: Secure login/logout with JWT token management
+- **Protected Routes**: Only authenticated users can access restricted pages
+- **Pages**:
+  - **Home Page**: Dashboard with library statistics
+  - **Books Page**: Browse, search, and filter available books
+  - **Book Details**: View detailed information about a specific book
+  - **Authors Page**: View all library authors
+  - **Members Page**: Manage member profiles (Admin only)
+  - **Borrowings Page**: Track active borrowings and returns
+  - **Login Page**: User authentication interface
+
+### Running the Frontend Locally
+
+1. Navigate to the `frontend` folder:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open your browser and navigate to `http://localhost:5173` (Vite's default port)
+
+### Running the Frontend with Docker
+
+The frontend is included in the `docker-compose.yml` and runs on port 3000:
+```bash
+docker-compose up --build
+```
+
+Access the frontend at: `http://localhost:3000`
+
+### Frontend Technologies
+
+- **React 18**: Modern UI framework with hooks
+- **Vite**: Fast build tool and development server
+- **Axios**: HTTP client for API communication
+- **React Router DOM**: Client-side routing
+- **CSS**: Styling (CSS modules and global styles)
+
+### Frontend Folder Structure
+
+```
+frontend/
+├── src/
+│   ├── components/        # Reusable UI components
+│   │   ├── Navbar.jsx     # Navigation bar component
+│   │   └── ProtectedRoute.jsx  # Route protection for authenticated users
+│   ├── pages/             # Page components
+│   │   ├── HomePage.jsx   # Landing page with dashboard
+│   │   ├── BooksPage.jsx  # Books catalog and search
+│   │   ├── BookDetailPage.jsx  # Individual book details
+│   │   ├── AuthorsPage.jsx    # Authors list
+│   │   ├── MembersPage.jsx    # Members management
+│   │   ├── BorrowingsPage.jsx # Borrowing records
+│   │   └── LoginPage.jsx  # Authentication page
+│   ├── services/
+│   │   └── api.js         # Axios instance and API helper functions
+│   ├── App.jsx            # Main app component with routing
+│   ├── main.jsx           # React entry point
+│   └── index.css          # Global styles
+├── public/                # Static assets
+├── package.json           # Dependencies and scripts
+├── vite.config.js         # Vite configuration
+├── index.html             # HTML template
+├── Dockerfile             # Frontend container configuration
+├── nginx.conf             # Nginx configuration for production
+└── README.md              # Frontend-specific documentation
+```
+
+### Frontend API Communication
+
+The frontend communicates with the backend API through the `api.js` service:
+
+```javascript
+// Example: Get all books
+import { api } from './services/api';
+const books = await api.get('/books');
+
+// Example: Create a borrowing
+const borrowing = await api.post('/borrowings', {
+  bookId: '123e4567-e89b-12d3-a456-426614174000',
+  memberId: '123e4567-e89b-12d3-a456-426614174001'
+});
+```
+
+---
+
+## Environment Variables & Configuration
+
+### Backend Configuration (appsettings.json)
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=librarydb;Username=libraryuser;Password=librarypass"
+  },
+  "Jwt": {
+    "Key": "SuperSecretKeyThatIsAtLeast32CharsLong!!",
+    "Issuer": "LibrarySystem",
+    "Audience": "LibraryUsers",
+    "ExpirationMinutes": 60
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  }
+}
+```
+
+### Docker Environment Variables
+
+When running with Docker, environment variables override `appsettings.json`:
+- `ConnectionStrings__DefaultConnection`: PostgreSQL connection string
+- `Jwt__Key`: JWT signing key
+- `Jwt__Issuer`: JWT issuer name
+- `Jwt__Audience`: JWT audience
+- `ASPNETCORE_ENVIRONMENT`: Development or Production
+
+### Frontend Configuration
+
+The frontend API base URL is configured in `frontend/src/services/api.js`:
+```javascript
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+```
+
+Create a `.env` file in the frontend directory:
+```
+VITE_API_BASE_URL=http://localhost:8080/api
+```
+
+---
+
+## Database Migrations & Seeding
+
+### Running Migrations (Local Development)
+
+Apply all pending migrations:
+```bash
+dotnet ef database update
+```
+
+Create a new migration after model changes:
+```bash
+dotnet ef migrations add MigrationName
+dotnet ef database update
+```
+
+### Docker Database Initialization
+
+Docker automatically initializes the database on first run using the existing migrations. The database is stored in a named volume `postgres-data` for persistence.
+
+To reset the database:
+```bash
+docker-compose down -v  # Remove volumes
+docker-compose up --build  # Rebuild and reinitialize
+```
+
+### Seeded Data
+
+The application includes default seeded data:
+- **Admin Account**: `admin@library.com` / `Admin@123`
+- **Sample Member**: `john@member.com` / `Admin@123`
+- **Sample Books & Authors**: Loaded from migrations
+
+---
+
+## Health Check Endpoints
+
+The application includes health check endpoints for monitoring:
+
+- `GET /health` - Basic health check (returns 200 OK if service is running)
+- Used by Docker for liveness and readiness probes
+
+Example Docker health check:
+```yaml
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 20s
+```
+
+---
+
+## API Response Examples
+
+### Successful Login Response
+
+**Request:**
+```bash
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@library.com",
+  "password": "Admin@123"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expiresIn": 3600,
+  "message": "Login successful"
+}
+```
+
+### Get Books Response
+
+**Request:**
+```bash
+GET /api/books
+Authorization: Bearer {token}
+```
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "title": "The Great Gatsby",
+    "isbn": "978-0743273565",
+    "publishedYear": 1925,
+    "authorId": "223e4567-e89b-12d3-a456-426614174001",
+    "author": {
+      "id": "223e4567-e89b-12d3-a456-426614174001",
+      "name": "F. Scott Fitzgerald"
+    },
+    "availableCopies": 3,
+    "totalCopies": 5
+  }
+]
+```
+
+### Create Borrowing Response
+
+**Request:**
+```bash
+POST /api/borrowings
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "bookId": "123e4567-e89b-12d3-a456-426614174000",
+  "memberId": "323e4567-e89b-12d3-a456-426614174002",
+  "borrowDate": "2026-05-06",
+  "dueDate": "2026-05-20"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": "423e4567-e89b-12d3-a456-426614174003",
+  "memberId": "323e4567-e89b-12d3-a456-426614174002",
+  "bookId": "123e4567-e89b-12d3-a456-426614174000",
+  "borrowDate": "2026-05-06",
+  "dueDate": "2026-05-20",
+  "returnDate": null,
+  "status": "Active"
+}
+```
+
+### Error Response Examples
+
+**401 Unauthorized (Missing/Invalid Token):**
+```json
+{
+  "statusCode": 401,
+  "message": "Unauthorized: No token provided or token is invalid"
+}
+```
+
+**403 Forbidden (Insufficient Permissions):**
+```json
+{
+  "statusCode": 403,
+  "message": "Forbidden: You do not have permission to access this resource"
+}
+```
+
+**404 Not Found:**
+```json
+{
+  "statusCode": 404,
+  "message": "Resource not found"
+}
+```
+
+**400 Bad Request (Validation Error):**
+```json
+{
+  "statusCode": 400,
+  "message": "Validation failed",
+  "errors": {
+    "email": "Email is required",
+    "password": "Password must be at least 8 characters"
+  }
+}
+```
+
+---
+
+## Development Setup
+
+### Prerequisites for Local Development
+
+1. **Backend**:
+   - .NET 8 SDK
+   - PostgreSQL 16 (or run `docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=password postgres:16-alpine`)
+   - Visual Studio Code or Visual Studio 2022
+
+2. **Frontend**:
+   - Node.js 18+ 
+   - npm or yarn
+
+### Full Stack Development Workflow
+
+1. **Start PostgreSQL** (if not using Docker):
+   ```bash
+   # Windows
+   pg_ctl -D "C:\Program Files\PostgreSQL\16\data" start
+   ```
+
+2. **Terminal 1 - Backend**:
+   ```bash
+   cd LibraryManagementSystem
+   dotnet restore
+   dotnet ef database update
+   dotnet run
+   ```
+   Backend runs on: `http://localhost:5000`
+
+3. **Terminal 2 - Frontend**:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+   Frontend runs on: `http://localhost:5173`
+
+4. **Access the Application**:
+   - Frontend: `http://localhost:5173`
+   - API Swagger: `http://localhost:5000/swagger`
+   - Login with: `admin@library.com` / `Admin@123`
+
+### Debugging
+
+**Backend - Visual Studio Code**:
+1. Install C# Dev Kit extension
+2. Press F5 to start debugging
+3. Set breakpoints in your C# code
+
+**Frontend - Browser DevTools**:
+1. Open DevTools (F12)
+2. Use React DevTools browser extension for component inspection
+
+---
+
+## Security Considerations
+
+### Current Implementation
+
+- **JWT Authentication**: Tokens signed with HS256
+- **Password Hashing**: BCrypt.Net for secure password storage
+- **CORS Policy**: Configured to accept requests from any origin (for development)
+- **Role-Based Access Control**: Admin/Member roles for authorization
+
+### Production Recommendations
+
+1. **HTTPS Only**: Enable SSL/TLS certificates
+2. **Restrict CORS**: Specify allowed origins instead of `AllowAnyOrigin()`
+3. **HTTP-Only Cookies**: Store JWT in HTTP-only cookies instead of localStorage
+4. **Rate Limiting**: Implement request throttling to prevent brute-force attacks
+5. **Environment Variables**: Use secure vaults for sensitive configuration
+6. **Input Validation**: Sanitize all user inputs
+7. **SQL Injection Prevention**: Use parameterized queries (already done with EF Core)
+8. **Secrets Management**: Use Azure Key Vault, AWS Secrets Manager, or similar
+9. **Audit Logging**: Log all administrative actions
+10. **Regular Updates**: Keep dependencies updated for security patches
+
+---
+
+## Contributing Guidelines
+
+### Code Standards
+
+- Follow **C# naming conventions** (PascalCase for classes/methods, camelCase for variables)
+- Follow **JavaScript/React conventions** (camelCase for functions, PascalCase for components)
+- Use meaningful variable and function names
+- Add comments for complex business logic
+- Keep methods/functions focused on a single responsibility
+
+### Creating a New Feature
+
+1. Create a feature branch: `git checkout -b feature/feature-name`
+2. Implement the feature (backend and/or frontend)
+3. Test thoroughly
+4. Submit a pull request with a clear description
+5. Address code review comments
+
+### Before Committing
+
+- Ensure all code builds/runs without errors
+- Test the feature manually
+- Run any automated tests (if configured)
+- Update documentation if needed
+
+---
+
+## Performance Optimization Notes
+
+- **Database Indexing**: Consider adding indexes on frequently queried fields (Email, ISBN)
+- **Pagination**: Implement pagination for large data sets (Books, Borrowings)
+- **Caching**: Consider caching popular books or authors
+- **API Response Optimization**: Use DTOs to return only necessary fields
+- **Frontend Optimization**: 
+  - Lazy load pages using React Router
+  - Use React memo for component optimization
+  - Implement infinite scroll or pagination for large lists
+
+---
+
+## Future Enhancements
+
+- [ ] Email notifications for borrowing reminders and overdue books
+- [ ] Advanced search and filtering options
+- [ ] Book recommendations system based on borrowing history
+- [ ] Fine management system for overdue books
+- [ ] Review and rating system for books
+- [ ] User dashboard with borrowing history and statistics
+- [ ] Admin analytics and reporting
+- [ ] Mobile app (React Native or Flutter)
+- [ ] Integration with third-party book APIs (ISBN lookup)
+- [ ] Two-factor authentication (2FA) for enhanced security
+- [ ] Dark mode UI theme
+- [ ] Multi-language support (i18n)
+
+---
+
+## Useful Commands
+
+### Backend Commands
+
+```bash
+# Restore dependencies
+dotnet restore
+
+# Build the project
+dotnet build
+
+# Run the application
+dotnet run
+
+# Create a database migration
+dotnet ef migrations add MigrationName
+
+# Apply migrations
+dotnet ef database update
+
+# Run tests (if test project exists)
+dotnet test
+
+# Publish for production
+dotnet publish -c Release
+```
+
+### Frontend Commands
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Format code
+npm run format  # If prettier is configured
+```
+
+### Docker Commands
+
+```bash
+# Build and start all services
+docker-compose up --build
+
+# Stop all services
+docker-compose down
+
+# Remove volumes (resets database)
+docker-compose down -v
+
+# View logs
+docker-compose logs -f api
+
+# Scale a service
+docker-compose up --build --scale api=2
+```
+
+### PostgreSQL Commands (Docker)
+
+```bash
+# Connect to the database
+docker exec -it lms-postgres psql -U libraryuser -d librarydb
+
+# List tables
+\dt
+
+# Exit psql
+\q
+```
+
+---
+
+## Support & Contact
+
+For issues, questions, or suggestions, please:
+1. Check the **Troubleshooting** section above
+2. Review the **API Endpoints** documentation
+3. Check Docker logs: `docker-compose logs -f`
+4. Consult the code comments and documentation
+
+---
+
 ## License
 
 This project is provided as-is for educational and development purposes.
