@@ -1,0 +1,9 @@
+.books-count {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-weight: 500;
+}

@@ -1,0 +1,123 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  background: var(--color-primary);
+  box-shadow: 0 2px 12px rgba(26, 37, 47, 0.25);
+}
+
+.navbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Brand */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #FAFAF7;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+  transition: opacity var(--transition);
+}
+.navbar-brand:hover { opacity: 0.85; }
+.navbar-brand span { color: #D4C9B0; }
+
+/* Links */
+.navbar-links {
+  display: flex;
+  list-style: none;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-link {
+  display: block;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #B2BEC3;
+  text-decoration: none;
+  transition: color var(--transition), background var(--transition);
+}
+
+.nav-link:hover {
+  color: #FAFAF7;
+  background: rgba(255,255,255,0.08);
+}
+
+.nav-link.active {
+  color: #FAFAF7;
+  background: rgba(255,255,255,0.12);
+}
+
+/* Right side */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.navbar-user {
+  font-size: 0.82rem;
+  color: #D4C9B0;
+  font-weight: 500;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-logout {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(212, 201, 176, 0.35);
+  background: transparent;
+  color: #D4C9B0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+.btn-logout:hover {
+  background: var(--color-danger);
+  color: #fff;
+  border-color: var(--color-danger);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar-inner {
+    padding: 0 16px;
+    gap: 12px;
+  }
+
+  .navbar-links {
+    gap: 0;
+  }
+
+  .nav-link {
+    padding: 6px 8px;
+    font-size: 0.82rem;
+  }
+
+  .navbar-user {
+    display: none;
+  }
+
+  .navbar-brand span {
+    display: none;
+  }
+}

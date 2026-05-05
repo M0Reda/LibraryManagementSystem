@@ -45,6 +45,19 @@ services:
       retries: 3
       start_period: 20s
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: library-management-frontend:latest
+    container_name: lms-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
   swagger-ui:
     image: swaggerapi/swagger-ui
     container_name: lms-swagger-ui
