@@ -121,10 +121,17 @@ export default function BooksPage() {
         setBorrowing(false)
         return
       }
+      if (!borrowDueDate) {
+        setBorrowError('Please select a due date.')
+        setBorrowing(false)
+        return
+      }
+      // Convert date string (YYYY-MM-DD) to ISO DateTime at end of day
+      const dueDateTime = new Date(borrowDueDate + 'T23:59:59Z').toISOString()
       await createBorrowing({
         memberId: parseInt(memberId, 10),
         bookId: borrowBook.id,
-        dueDate: borrowDueDate,
+        dueDate: dueDateTime,
       })
       setBorrowBook(null)
       setBorrowDueDate('')

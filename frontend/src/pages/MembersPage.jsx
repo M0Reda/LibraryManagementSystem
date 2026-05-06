@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { getMembers, updateMember, deleteMember, changeMemberRole } from '../services/api'
+import { getMembers, updateMember, deleteMember } from '../services/api'
 
 export default function MembersPage() {
   const role    = localStorage.getItem('userRole') || 'Member'
@@ -17,9 +17,6 @@ export default function MembersPage() {
 
   const [confirmId, setConfirmId] = useState(null)
   const [deleting, setDeleting]   = useState(false)
-  const [roleChangeId, setRoleChangeId] = useState(null)
-  const [roleChangeTarget, setRoleChangeTarget] = useState(null)
-  const [roleSaving, setRoleSaving] = useState(false)
 
   const fetchMembers = useCallback(async () => {
     setLoading(true)
@@ -76,21 +73,7 @@ export default function MembersPage() {
       fetchMembers()
     } catch {
       alert('Failed to delete member.')
-   
-
-  const handleChangeRole = async (memberId, newRole) => {
-    setRoleSaving(true)
-    try {
-      await changeMemberRole(memberId, { role: newRole })
-      setRoleChangeId(null)
-      setRoleChangeTarget(null)
-      fetchMembers()
-    } catch (err) {
-      alert(err.response?.data?.message || 'Failed to change role.')
     } finally {
-      setRoleSaving(false)
-    }
-  } } finally {
       setDeleting(false)
     }
   }
@@ -151,7 +134,6 @@ export default function MembersPage() {
                 <th>#</th>
                 <th>Full Name</th>
                 <th>Email</th>
-                <th>Role</th>
                 <th>Phone</th>
                 <th>Actions</th>
               </tr>
@@ -162,11 +144,6 @@ export default function MembersPage() {
                   <td style={{ color: 'var(--color-text-muted)' }}>{i + 1}</td>
                   <td style={{ fontWeight: 600 }}>{member.fullName}</td>
                   <td style={{ color: 'var(--color-accent)' }}>{member.email}</td>
-                  <td>
-                    <span className={`badge ${member.role === 'Admin' ? 'badge-admin' : 'badge-member'}`}>
-                      {member.role}
-                    </span>
-                  </td>
                   <td style={{ color: 'var(--color-text-muted)' }}>{member.profile?.phone || '—'}</td>
                   <td>
                     <div className="table-actions">
@@ -177,15 +154,6 @@ export default function MembersPage() {
                       >
                         ✏️ Edit
                       </button>
-                      {member.role !== 'Admin' && (
-                        <button
-                          id={`role-member-${member.id}`}
-                          className="btn btn-info btn-sm"
-                          onClick={() => setRoleChangeId(member.id)}
-                        >
-                          👤 Role
-                        </button>
-                      )}
                       <button
                         id={`delete-member-${member.id}`}
                         className="btn btn-danger btn-sm"
@@ -251,41 +219,6 @@ export default function MembersPage() {
                 <p>Remove this member? This action cannot be undone.</p>
               </div>
             </div>
-
-      {roleChangeId && (
-        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setRoleChangeId(null)}>
-          <div className="modal">
-            <div className="modal-header">
-              <span className="modal-title">👤 Change Member Role</span>
-              <button className="modal-close" onClick={() => setRoleChangeId(null)}>×</button>
-            </div>
-            <div className="modal-body">
-              <div className="confirm-dialog">
-                <p>Select new role for this member:</p>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-ghost" onClick={() => setRoleChangeId(null)}>Cancel</button>
-              <button 
-                id="change-role-member-btn" 
-                className="btn btn-primary" 
-                onClick={() => handleChangeRole(roleChangeId, 'Admin')} 
-                disabled={roleSaving}
-              >
-                {roleSaving ? 'Saving…' : '👑 Make Admin'}
-              </button>
-              <button 
-                id="change-role-member-member-btn" 
-                className="btn btn-ghost" 
-                onClick={() => handleChangeRole(roleChangeId, 'Member')} 
-                disabled={roleSaving}
-              >
-                {roleSaving ? 'Saving…' : '👤 Make Member'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
             <div className="modal-footer">
               <button className="btn btn-ghost" onClick={() => setConfirmId(null)}>Cancel</button>
               <button id="confirm-delete-member-btn" className="btn btn-danger" onClick={handleDelete} disabled={deleting}>

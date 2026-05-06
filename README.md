@@ -205,10 +205,10 @@ LibraryManagementSystem/
 - `DELETE /api/members/{id}` - Delete member (Admin only)
 
 ### Borrowings
-- `GET /api/borrowings` - Get borrowing records
-- `GET /api/borrowings/{id}` - Get borrowing by ID
-- `POST /api/borrowings` - Create new borrowing record
-- `PUT /api/borrowings/{id}/return` - Return a borrowed book
+- `GET /api/borrowings` - Get all borrowing records
+- `GET /api/borrowings/member/{memberId}` - Get borrowings for a specific member
+- `POST /api/borrowings` - Create new borrowing record (Member/Admin)
+- `POST /api/borrowings/{id}/return` - Return a borrowed book (Member/Admin)
 
 ---
 
@@ -226,8 +226,15 @@ LibraryManagementSystem/
 
 ### Roles & Permissions
 
-- **Admin**: Full access to all endpoints (create, read, update, delete books, authors, and members)
-- **Member**: Limited access (view books, manage own profile, borrow books)
+- **Admin**: Full access to all endpoints including:
+  - Create, read, update, delete books and authors
+  - View and manage all members
+  - View all borrowing records
+- **Member**: Limited but practical access including:
+  - View all books and authors
+  - Borrow and return books
+  - View their own borrowing history
+  - Manage their own profile information
 
 ### How to Authenticate
 
@@ -268,6 +275,22 @@ Edit `appsettings.json` to configure:
 
 ---
 
+## Recent Updates & Improvements
+
+### Borrowing System Enhancements
+- **Fixed MemberId Issue**: The borrowing system now correctly captures and validates the member ID from the JWT token stored during login
+- **Date Format Conversion**: Proper ISO 8601 DateTime conversion for due dates to ensure database compatibility
+- **Improved Error Handling**: Enhanced error messages for borrowing failures with validation for:
+  - Member existence verification
+  - Book availability validation
+  - Due date validation (must be in the future)
+
+### Frontend Improvements
+- **Book Borrowing UI**: Members can now borrow books directly from the Books page with an intuitive modal interface
+- **Members Management**: Simplified admin interface for member management - removed role change functionality for streamlined administration
+
+---
+
 ## Troubleshooting
 
 ### Common Issues
@@ -290,7 +313,13 @@ Edit `appsettings.json` to configure:
    - Verify you have the required role (Admin/Member)
    - Check endpoint permission requirements in controller
 
-5. **Docker compose fails to start**
+5. **"Failed to borrow book" or borrowing fails with 500 error**
+   - Ensure you are logged in and have a valid member ID
+   - Verify the book ID exists in the database
+   - Select a due date in the future
+   - Check browser console for detailed error message
+
+6. **Docker compose fails to start**
    - Ensure ports 8080, 8081, 5050, 5432 are not in use
    - Clear Docker cache: `docker-compose down -v`
    - Rebuild: `docker-compose up --build`
@@ -306,14 +335,15 @@ The frontend is a **React + Vite** application that provides a user-friendly int
 - **Responsive UI**: Works on desktop, tablet, and mobile devices
 - **User Authentication**: Secure login/logout with JWT token management
 - **Protected Routes**: Only authenticated users can access restricted pages
+- **Book Borrowing**: Members can borrow books directly from the book catalog with due date selection
 - **Pages**:
   - **Home Page**: Dashboard with library statistics
-  - **Books Page**: Browse, search, and filter available books
+  - **Books Page**: Browse, search, and filter available books; borrow books with due date selection
   - **Book Details**: View detailed information about a specific book
   - **Authors Page**: View all library authors
-  - **Members Page**: Manage member profiles (Admin only)
-  - **Borrowings Page**: Track active borrowings and returns
-  - **Login Page**: User authentication and registration interface with phone number capture
+  - **Members Page**: View and manage member profiles including contact information (Admin only)
+  - **Borrowings Page**: Track active borrowings and manage book returns
+  - **Login Page**: User authentication and registration with phone number capture
 
 ### Running the Frontend Locally
 
@@ -392,10 +422,27 @@ const books = await api.get('/books');
 
 // Example: Create a borrowing
 const borrowing = await api.post('/borrowings', {
-  bookId: '123e4567-e89b-12d3-a456-426614174000',
-  memberId: '123e4567-e89b-12d3-a456-426614174001'
+  memberId: parseInt(localStorage.getItem('memberId'), 10),
+  bookId: 1,
+  dueDate: new Date(selectedDate + 'T23:59:59Z').toISOString()
 });
 ```
+
+### How to Borrow a Book
+
+**From the Frontend:**
+1. Navigate to the **Books** page
+2. Click the **📚 Borrow** button on any book card
+3. A modal will appear asking for a due date
+4. Select a future date for the book's due date
+5. Click **Confirm Borrow**
+6. Check your **Borrowings** page to view the borrowed book
+
+**Key Requirements:**
+- You must be logged in as a Member or Admin
+- The member ID is automatically captured from your JWT token
+- The due date must be in the future
+- The book must exist in the database
 
 ---
 

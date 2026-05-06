@@ -35,8 +35,19 @@ namespace LibraryManagementSystem.Controllers
         [Authorize(Roles = "Member,Admin")]
         public async Task<IActionResult> Borrow(CreateBorrowingDto dto)
         {
-            var borrowing = await _service.CreateBorrowingAsync(dto);
-            return Ok(borrowing);
+            try
+            {
+                var borrowing = await _service.CreateBorrowingAsync(dto);
+                return Ok(borrowing);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPost("{id}/return")]

@@ -54,6 +54,19 @@ namespace LibraryManagementSystem.Services.Implementations
 
         public async Task<BorrowingResponseDto> CreateBorrowingAsync(CreateBorrowingDto dto)
         {
+            // Validate that member and book exist
+            var member = await _context.Members.FindAsync(dto.MemberId);
+            if (member == null)
+                throw new ArgumentException($"Member with ID {dto.MemberId} not found.");
+
+            var book = await _context.Books.FindAsync(dto.BookId);
+            if (book == null)
+                throw new ArgumentException($"Book with ID {dto.BookId} not found.");
+
+            // Validate due date is in the future
+            if (dto.DueDate <= DateTime.UtcNow)
+                throw new ArgumentException("Due date must be in the future.");
+
             var borrowing = new Borrowing
             {
                 MemberId = dto.MemberId,
@@ -62,19 +75,23 @@ namespace LibraryManagementSystem.Services.Implementations
                 DueDate = dto.DueDate
             };
 
-            await _context.Borrowings.AddAsync(borrowing);
-            await _context.SaveChangesAsync();
-
-            var member = await _context.Members.FindAsync(dto.MemberId);
-            var book = await _context.Books.FindAsync(dto.BookId);
+            try
+            {
+                await _context.Borrowings.AddAsync(borrowing);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to save borrowing: {ex.InnerException?.Message ?? ex.Message}", ex);
+            }
 
             return new BorrowingResponseDto
             {
                 Id = borrowing.Id,
                 MemberId = borrowing.MemberId,
-                MemberName = member?.FullName ?? "Unknown",
+                MemberName = member.FullName,
                 BookId = borrowing.BookId,
-                BookTitle = book?.Title ?? "Unknown",
+                BookTitle = book.Title,
                 BorrowDate = borrowing.BorrowDate,
                 DueDate = borrowing.DueDate
             };
