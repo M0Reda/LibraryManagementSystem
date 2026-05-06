@@ -53,11 +53,16 @@ export default function LoginPage() {
         payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
         payload.role ||
         'Member'
+      const memberId =
+        payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ||
+        payload.nameidentifier ||
+        payload.sub
 
       localStorage.setItem('token', token)
       localStorage.setItem('userEmail', email)
       localStorage.setItem('userFullName', fullName)
       localStorage.setItem('userRole', role)
+      localStorage.setItem('memberId', memberId)
 
       navigate('/books')
     } catch (err) {

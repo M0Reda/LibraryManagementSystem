@@ -25,6 +25,7 @@ api.interceptors.response.use(
       localStorage.removeItem('token')
       localStorage.removeItem('userEmail')
       localStorage.removeItem('userRole')
+      localStorage.removeItem('memberId')
       window.location.href = '/login'
     }
     return Promise.reject(error)

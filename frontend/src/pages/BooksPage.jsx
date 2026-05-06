@@ -115,7 +115,14 @@ export default function BooksPage() {
     setBorrowing(true)
     setBorrowError('')
     try {
+      const memberId = localStorage.getItem('memberId')
+      if (!memberId) {
+        setBorrowError('Member ID not found. Please log in again.')
+        setBorrowing(false)
+        return
+      }
       await createBorrowing({
+        memberId: parseInt(memberId, 10),
         bookId: borrowBook.id,
         dueDate: borrowDueDate,
       })
