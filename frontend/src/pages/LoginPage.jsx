@@ -88,7 +88,10 @@ export default function LoginPage() {
         }
       }
       
-      msg = msg.replace(/The field Password must be a string or array type with a minimum length of '[^']*'\./i, 'Password must be min of 6 characters')
+      // Simplify validation messages
+      if (typeof msg === 'string') {
+        msg = msg.replace(/The field Password must be a string or array type with a minimum length of '\d+'/i, 'Password must be min of 6 characters')
+      }
       
       setError(msg)
     } finally {
