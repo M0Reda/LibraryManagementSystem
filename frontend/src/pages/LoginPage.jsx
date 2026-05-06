@@ -66,12 +66,31 @@ export default function LoginPage() {
 
       navigate('/books')
     } catch (err) {
-      const msg =
-        err.response?.data?.message ||
-        err.response?.data ||
-        (typeof err.response?.data === 'string' ? err.response.data : null) ||
-        'Something went wrong. Please try again.'
-      setError(typeof msg === 'string' ? msg : JSON.stringify(msg))
+      let msg = 'Something went wrong. Please try again.'
+      
+      if (err.response?.data) {
+        const data = err.response.data
+        
+        // Handle validation errors from backend
+        if (data.errors && typeof data.errors === 'object') {
+          const errorMessages = Object.values(data.errors).flat().filter(e => typeof e === 'string')
+          if (errorMessages.length > 0) {
+            msg = errorMessages[0]
+          } else if (data.title) {
+            msg = data.title
+          }
+        } else if (data.message && typeof data.message === 'string') {
+          msg = data.message
+        } else if (data.title && typeof data.title === 'string') {
+          msg = data.title
+        } else if (typeof data === 'string') {
+          msg = data
+        }
+      }
+      
+      msg = msg.replace(/The field Password must be a string or array type with a minimum length of '[^']*'\./i, 'Password must be min of 6 characters')
+      
+      setError(msg)
     } finally {
       setLoading(false)
     }
